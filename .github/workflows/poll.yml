@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       test_alert:
-        description: 'Send a test Pushover alert (verifies wiring without polling)'
+        description: 'HIGH priority test (priority 1) — gentle wiring check'
+        type: boolean
+        default: false
+      test_emergency:
+        description: 'EMERGENCY test (priority 2) — simulates the real alert. Bypasses DND, retries 30s.'
         type: boolean
         default: false
 
@@ -34,6 +38,7 @@ jobs:
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           TEST_ALERT: ${{ inputs.test_alert }}
+          TEST_EMERGENCY: ${{ inputs.test_emergency }}
         run: python scripts/poll.py
 
       - name: Commit state

@@ -20,6 +20,7 @@ STATE_PATH = Path("state/last_seen.json")
 PUSHOVER_USER = os.environ.get("PUSHOVER_USER", "")
 PUSHOVER_TOKEN = os.environ.get("PUSHOVER_TOKEN", "")
 TEST_ALERT = os.environ.get("TEST_ALERT", "").lower() in ("true", "1", "yes")
+TEST_EMERGENCY = os.environ.get("TEST_EMERGENCY", "").lower() in ("true", "1", "yes")
 
 
 def fetch_granicus() -> str:
@@ -95,6 +96,19 @@ def save_state(state: dict):
 
 def main():
     now = datetime.now(timezone.utc).isoformat()
+
+    if TEST_EMERGENCY:
+        fire_pushover(
+            "[TEST] 5/16 AGENDA PUBLISHED — sign up NOW",
+            "05/16/26 | 09:30 AM | City Council Public Hearing\n\n"
+            "[THIS IS A TEST] This is exactly what the real alert will look like on the day. "
+            "It should bypass Do Not Disturb, retry every 30 seconds for an hour, and ring through to your Apple Watch. "
+            "Tap to acknowledge.",
+            priority=2,
+            url="https://alexandria.granicus.com/ViewPublisher.php?view_id=57",
+        )
+        print(f"[{now}] EMERGENCY test alert fired (priority 2).")
+        return
 
     if TEST_ALERT:
         fire_pushover(
